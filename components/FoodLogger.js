@@ -22,6 +22,7 @@ export default function FoodLogger() {
   useEffect(() => {
     const id = getUserId();
     setUserId(id);
+    console.log('Food Logger initialized with user ID:', id);
     if (id) {
       loadEntries(id, currentDate);
     }
@@ -61,6 +62,7 @@ export default function FoodLogger() {
 
     try {
       setLoading(true);
+      console.log('Loading entries for user:', id, 'date:', date);
       const response = await fetch(`/api/logFood?userId=${id}&date=${date}`);
       
       if (!response.ok) {
@@ -68,6 +70,7 @@ export default function FoodLogger() {
       }
       
       const data = await response.json();
+      console.log('Loaded entries:', data);
       setEntries(data);
       setError(null);
     } catch (err) {
@@ -196,6 +199,29 @@ export default function FoodLogger() {
           <p style={{ color: "#718096", fontSize: "1.1rem", margin: 0 }}>
             Track your daily nutrition
           </p>
+          <div style={{ 
+            fontSize: "0.8rem", 
+            color: "#a0aec0", 
+            marginTop: "0.5rem",
+            fontFamily: "monospace"
+          }}>
+            User ID: {userId ? userId.slice(0, 8) + '...' : 'Loading...'}
+          </div>
+          <button
+            onClick={() => userId && loadEntries(userId, currentDate)}
+            style={{
+              background: "#e2e8f0",
+              color: "#4a5568",
+              border: "none",
+              borderRadius: "8px",
+              padding: "0.5rem 1rem",
+              fontSize: "0.8rem",
+              cursor: "pointer",
+              marginTop: "0.5rem"
+            }}
+          >
+            🔄 Manual Sync
+          </button>
         </div>
 
         {/* Nutrition Summary Cards */}
