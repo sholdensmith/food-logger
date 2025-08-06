@@ -3,7 +3,7 @@ import { supabase } from "../../../lib/supabase";
 export async function GET() {
   try {
     // Test the connection by running a simple query
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('food_entries')
       .select('count')
       .limit(1);

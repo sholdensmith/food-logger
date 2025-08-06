@@ -22,8 +22,10 @@ export default function FoodLogger() {
   useEffect(() => {
     const id = getUserId();
     setUserId(id);
-    loadEntries(id, currentDate);
-  }, []);
+    if (id) {
+      loadEntries(id, currentDate);
+    }
+  }, [currentDate, loadEntries]);
 
   // Check for new day and reset if needed
   useEffect(() => {
@@ -50,7 +52,7 @@ export default function FoodLogger() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [userId, currentDate]);
+  }, [userId, currentDate, loadEntries]);
 
   const loadEntries = useCallback(async (id, date) => {
     if (!id) return;
@@ -583,7 +585,7 @@ export default function FoodLogger() {
               color: "#2d3748", 
               margin: "0 0 1.5rem 0" 
             }}>
-              Today's Log
+              Today&apos;s Log
             </h2>
 
             {loading && entries.length === 0 && (
