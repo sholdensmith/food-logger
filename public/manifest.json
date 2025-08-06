@@ -4,8 +4,8 @@
   "description": "Track your daily nutrition with cross-device sync",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#e8f5e8",
-  "theme_color": "#38a169",
+  "background_color": "#fef3c7",
+  "theme_color": "#fbbf24",
   "orientation": "portrait-primary",
   "icons": [
     {

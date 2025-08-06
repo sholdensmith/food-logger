@@ -9,8 +9,7 @@ export default function FoodLogger() {
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().slice(0, 10));
-  const [showUserIdInput, setShowUserIdInput] = useState(false);
-  const [manualUserId, setManualUserId] = useState("");
+
 
   // Nutrition goals
   const goals = {
@@ -24,7 +23,6 @@ export default function FoodLogger() {
   useEffect(() => {
     const id = getUserId();
     setUserId(id);
-    console.log('Food Logger initialized with user ID:', id);
     if (id) {
       loadEntries(id, currentDate);
     }
@@ -64,7 +62,6 @@ export default function FoodLogger() {
 
     try {
       setLoading(true);
-      console.log('Loading entries for user:', id, 'date:', date);
       const response = await fetch(`/api/logFood?userId=${id}&date=${date}`);
       
       if (!response.ok) {
@@ -72,7 +69,6 @@ export default function FoodLogger() {
       }
       
       const data = await response.json();
-      console.log('Loaded entries:', data);
       setEntries(data);
       setError(null);
     } catch (err) {
@@ -201,114 +197,7 @@ export default function FoodLogger() {
           <p style={{ color: "#718096", fontSize: "1.1rem", margin: 0 }}>
             Track your daily nutrition
           </p>
-          <div style={{ 
-            fontSize: "0.8rem", 
-            color: "#a0aec0", 
-            marginTop: "0.5rem",
-            fontFamily: "monospace"
-          }}>
-            User ID: {userId ? userId.slice(0, 8) + '...' : 'Loading...'}
-          </div>
-          <div style={{ marginTop: "0.5rem" }}>
-            <button
-              onClick={() => userId && loadEntries(userId, currentDate)}
-              style={{
-                background: "#e2e8f0",
-                color: "#4a5568",
-                border: "none",
-                borderRadius: "8px",
-                padding: "0.5rem 1rem",
-                fontSize: "0.8rem",
-                cursor: "pointer",
-                marginRight: "0.5rem"
-              }}
-            >
-              🔄 Manual Sync
-            </button>
-            <button
-              onClick={() => setShowUserIdInput(!showUserIdInput)}
-              style={{
-                background: "#4299e1",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                padding: "0.5rem 1rem",
-                fontSize: "0.8rem",
-                cursor: "pointer"
-              }}
-            >
-              🔗 Link Device
-            </button>
-          </div>
-          {showUserIdInput && (
-            <div style={{ 
-              marginTop: "1rem", 
-              padding: "1rem", 
-              background: "#f7fafc", 
-              borderRadius: "8px",
-              border: "1px solid #e2e8f0"
-            }}>
-              <div style={{ fontSize: "0.9rem", marginBottom: "0.5rem", color: "#4a5568" }}>
-                Enter User ID from another device to sync:
-              </div>
-              <input
-                type="text"
-                value={manualUserId}
-                onChange={(e) => setManualUserId(e.target.value)}
-                placeholder="Paste user ID here..."
-                style={{
-                  width: "100%",
-                  padding: "0.5rem",
-                  border: "1px solid #e2e8f0",
-                  borderRadius: "4px",
-                  fontSize: "0.8rem",
-                  fontFamily: "monospace",
-                  marginBottom: "0.5rem"
-                }}
-              />
-              <div style={{ display: "flex", gap: "0.5rem" }}>
-                <button
-                  onClick={() => {
-                    if (manualUserId.trim()) {
-                      localStorage.setItem('food_logger_user_id', manualUserId.trim());
-                      setUserId(manualUserId.trim());
-                      setShowUserIdInput(false);
-                      setManualUserId("");
-                      loadEntries(manualUserId.trim(), currentDate);
-                    }
-                  }}
-                  style={{
-                    background: "#38a169",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.8rem",
-                    cursor: "pointer"
-                  }}
-                >
-                  Connect
-                </button>
-                <button
-                  onClick={() => {
-                    setShowUserIdInput(false);
-                    setManualUserId("");
-                  }}
-                  style={{
-                    background: "#e53e3e",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.8rem",
-                    cursor: "pointer"
-                  }}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
+
         </div>
 
         {/* Nutrition Summary Cards */}
@@ -802,10 +691,12 @@ export default function FoodLogger() {
           </div>
         </div>
 
+
+
         {/* Footer */}
         <div style={{ 
           textAlign: "center", 
-          marginTop: "2rem",
+          marginTop: "1rem",
           fontSize: "0.9rem", 
           color: "#a0aec0" 
         }}>
