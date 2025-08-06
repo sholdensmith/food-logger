@@ -25,7 +25,8 @@ export default function FoodLogger() {
     if (id) {
       loadEntries(id, currentDate);
     }
-  }, [currentDate, loadEntries]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDate]);
 
   // Check for new day and reset if needed
   useEffect(() => {
@@ -52,7 +53,8 @@ export default function FoodLogger() {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [userId, currentDate, loadEntries]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, currentDate]);
 
   const loadEntries = useCallback(async (id, date) => {
     if (!id) return;
