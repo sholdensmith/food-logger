@@ -25,23 +25,34 @@ export async function POST(request) {
       );
     }
 
-    // Get nutrition data from OpenAI using o3 reasoning
+    // Get nutrition data from OpenAI using GPT-4o
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
-      tools: [{"type": "reasoning"}],
       messages: [
         {
           role: "system",
           content:
-            "You are a nutrition assistant. Given a food description, analyze the food item and return valid JSON with keys: calories (number), protein (g), carbs (g), fats (g). Use reasoning to estimate accurate nutrition values based on typical serving sizes and food composition.",
+            "You are a nutrition assistant. Given a food description, analyze the food item and return valid JSON with keys: calories (number), protein (g), carbs (g), fats (g). Use reasoning to estimate accurate nutrition values based on typical serving sizes and food composition. Always return valid JSON format.",
         },
         { role: "user", content: `Nutrition facts for: "${food}"` },
       ],
+      temperature: 0.1,
     });
 
-    const nutrition = JSON.parse(
-      completion.choices[0].message.content.trim()
-    );
+    const responseContent = completion.choices[0].message.content.trim();
+    console.log('OpenAI response:', responseContent);
+    
+    let nutrition;
+    try {
+      nutrition = JSON.parse(responseContent);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError);
+      console.error('Response content:', responseContent);
+      return new Response(
+        JSON.stringify({ error: "Failed to parse nutrition data from AI response." }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     // Create entry with timestamp
     const entryDate = date || new Date().toISOString().slice(0, 10);
