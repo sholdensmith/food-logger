@@ -25,14 +25,15 @@ export async function POST(request) {
       );
     }
 
-    // Get nutrition data from OpenAI
+    // Get nutrition data from OpenAI using o3 reasoning
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
+      tools: [{"type": "reasoning"}],
       messages: [
         {
           role: "system",
           content:
-            "You are a nutrition assistant. Given a food description, return valid JSON with keys: calories (number), protein (g), carbs (g), fats (g).",
+            "You are a nutrition assistant. Given a food description, analyze the food item and return valid JSON with keys: calories (number), protein (g), carbs (g), fats (g). Use reasoning to estimate accurate nutrition values based on typical serving sizes and food composition.",
         },
         { role: "user", content: `Nutrition facts for: "${food}"` },
       ],
