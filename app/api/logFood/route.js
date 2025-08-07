@@ -25,34 +25,55 @@ export async function POST(request) {
       );
     }
 
-    // Get nutrition data from OpenAI using GPT-4o
+    // Get nutrition data from OpenAI using GPT-4o with function calling
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
           role: "system",
           content:
-            "You are a nutrition assistant. Given a food description, analyze the food item and return valid JSON with keys: calories (number), protein (g), carbs (g), fats (g). Use reasoning to estimate accurate nutrition values based on typical serving sizes and food composition. Always return valid JSON format.",
+            "You are a nutrition assistant. Given a food description, analyze the food item and estimate nutrition values based on typical serving sizes and food composition.",
         },
         { role: "user", content: `Nutrition facts for: "${food}"` },
       ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "get_nutrition_facts",
+            description: "Get nutrition facts for a food item",
+            parameters: {
+              type: "object",
+              properties: {
+                calories: {
+                  type: "number",
+                  description: "Calories per serving"
+                },
+                protein: {
+                  type: "number",
+                  description: "Protein in grams per serving"
+                },
+                carbs: {
+                  type: "number",
+                  description: "Carbohydrates in grams per serving"
+                },
+                fats: {
+                  type: "number",
+                  description: "Fat in grams per serving"
+                }
+              },
+              required: ["calories", "protein", "carbs", "fats"]
+            }
+          }
+        }
+      ],
+      tool_choice: { type: "function", function: { name: "get_nutrition_facts" } },
       temperature: 0.1,
     });
 
-    const responseContent = completion.choices[0].message.content.trim();
-    console.log('OpenAI response:', responseContent);
-    
-    let nutrition;
-    try {
-      nutrition = JSON.parse(responseContent);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      console.error('Response content:', responseContent);
-      return new Response(
-        JSON.stringify({ error: "Failed to parse nutrition data from AI response." }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    const toolCall = completion.choices[0].message.tool_calls[0];
+    const nutrition = JSON.parse(toolCall.function.arguments);
+    console.log('Nutrition data:', nutrition);
 
     // Create entry with timestamp
     const entryDate = date || new Date().toISOString().slice(0, 10);
