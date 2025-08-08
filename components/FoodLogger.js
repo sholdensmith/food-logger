@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { getUserId, isNewDay } from "../lib/userManager";
+import { getPacificDateString } from "../lib/date";
 
 export default function FoodLogger() {
   const [input, setInput] = useState("");
@@ -8,7 +9,7 @@ export default function FoodLogger() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [currentDate, setCurrentDate] = useState(new Date().toISOString().slice(0, 10));
+  const [currentDate, setCurrentDate] = useState(getPacificDateString());
 
 
   // Nutrition goals
@@ -33,10 +34,10 @@ export default function FoodLogger() {
   useEffect(() => {
     const checkNewDay = () => {
       if (isNewDay()) {
-        const today = new Date().toISOString().slice(0, 10);
-        setCurrentDate(today);
+        const todayPacific = getPacificDateString();
+        setCurrentDate(todayPacific);
         setEntries([]);
-        loadEntries(userId, today);
+        loadEntries(userId, todayPacific);
       }
     };
 

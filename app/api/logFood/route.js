@@ -1,6 +1,7 @@
 // app/api/logFood/route.js
 import OpenAI from "openai";
 import { supabase, FOOD_ENTRIES_TABLE } from "../../../lib/supabase";
+import { getPacificDateString } from "../../../lib/date";
 
 // instantiate once at module scope
 const openai = new OpenAI({
@@ -76,7 +77,7 @@ export async function POST(request) {
     console.log('Nutrition data:', nutrition);
 
     // Create entry with timestamp
-    const entryDate = date || new Date().toISOString().slice(0, 10);
+    const entryDate = date || getPacificDateString();
     const entry = {
       id: crypto.randomUUID(),
       user_id: userId,
@@ -121,7 +122,7 @@ export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
-    const date = searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    const date = searchParams.get('date') || getPacificDateString();
 
     if (!userId) {
       return new Response(
